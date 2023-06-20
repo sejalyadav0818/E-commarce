@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Listing</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#myTable').DataTable();
+    });
+  </script>
+</head>
+
+<body>
+  <%- include("darshboard") -%>
+    <br>
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal">Add Product</button>
+    <br> <br>
+    <table id="myTable" class="display" style="width:90%">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Product Description</th>
+          <th>Product Price</th>
+
+          <th>Category</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i=0; i < products.length; i++) { %>
+          <tr>
+            <td>
+              <%= products[i].product_name %>
+            </td>
+            <td>
+              <%= products[i].product_description %>
+            </td>
+            <td>
+              <%= products[i].product_price %>
+            </td>
+            <td>
+              <% for (let j=0; j < products[i].catrgory.length; j++) { %>
+                <li>
+                  <%= products[i].catrgory[j].category_name %>
+                </li>
+                <% } %>
+
+            </td>
+            <td>
+
+           <!-- <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#editModal"></a> -->
+              <form action="/Product/delete/<%= products[i].id %>" method="POST" style="display: inline-block">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% } %>
+      </tbody>
+
+    </table>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProductModalLabel">Add Product</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <% categories.forEach(function(category) { %>
+              <form action="/Product/products/<%= category.id %>" method="POST">
+                <% }); %>
+
+                  <label for="categoryId">Category:</label>
+                  <select class="form-select" aria-label="Default select example" id="categoryId" name="categoryId">
+                    <% categories.forEach(function(category) { %>
+                      <option value="<%= category.id %>">
+                        <%= category.category_name %>
+                      </option>
+                      <% }); %>
+                  </select>
+
+                  <div class="form-group">
+                    <label for="edit-product-name">Product Name</label>
+                    <input type="text" class="form-control" id="edit-product-name" name="product_name"
+                      placeholder="Enter product name" value="" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-product-description">Product Description</label>
+                    <textarea class="form-control" id="edit-product-description" name="product_description"
+                      placeholder="Enter product description" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-product-price">Price</label>
+                    <input type="number" class="form-control" id="edit-product-price" name="product_price"
+                      placeholder="Enter price" value="" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-product-image">Product Image</label>
+                    <input type="file" name="product_image" />
+                  </div>
+                  <button type="submit" class="btn btn-primary">Add</button>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% categories.forEach(function(category) { %>
+      <!-- Edit User Modal -->
+      <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel"</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="/edit/<%= category.id %>" method="POST">
+                <div class="form-group">
+                  <label for="edit-name">Catgeory Name</label>
+                  <input type="text" class="form-control" id="edit-name" name="category_name"
+                    placeholder="Enter category name" value="" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+</body>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</html>

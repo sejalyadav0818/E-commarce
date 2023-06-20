@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Online Store</title>
+</head>
+<body>
+    <% if (page === 'search') { %>
+        <h1>Product Search</h1>
+        <form action="/products/search" method="GET">
+            <input type="text" name="query" placeholder="Search by name, category, or price range">
+            <button type="submit">Search</button>
+        </form>
+        <h2>Search Results:</h2>
+        <% if (products.length > 0) { %>
+            <ul>
+                <% products.forEach((product) => { %>
+                    <li>
+                        <span><%= product.name %></span>
+                        <span><%= product.category %></span>
+                        <span><%= product.price %></span>
+                        <a href="/products/<%= product.id %>">View Details</a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No results found.</p>
+        <% } %>
+    <% } else if (page === 'product-details') { %>
+        <h1>Product Details</h1>
+        <h2><%= product.name %></h2>
+        <p>Category: <%= product.category %></p>
+        <p>Price: <%= product.price %></p>
+        <form action="/products/<%= product.id %>/add-to-cart" method="POST">
+            <input type="number" name="quantity" value="1">
+            <button type="submit">Add to Cart</button>
+        </form>
+    <% } else if (page === 'cart') { %>
+        <h1>Cart</h1>
+        <% if (cartItems.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% cartItems.forEach((item) => { %>
+                        <tr>
+                            <td><%= item.product.name %></td>
+                            <td><%= item.product.price %></td>
+                            <td>
+                                <form action="/cart/<%= item.id %>/update-quantity" method="POST">
+                                    <input type="number" name="quantity" value="<%= item.quantity %>">
+                                    <button type="submit">Update</button>
+                                </form>
+                            </td>
+                            <td><%= item.quantity * item.product.price %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <h2>Total: <%= total %></h2>
+            <a href="/checkout">Checkout</a>
+        <% } else { %>
+            <p>Your cart is empty.</p>
+        <% } %>
+    <% } else if (page === 'checkout') { %>
+        <h1>Checkout</h1>
+        <h2>Order Summary:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% cartItems.forEach((item) => { %>
+                    <tr>
+                        <td><%= item.product.name %></td>
+                        <td><%= item.product.price %></td>
+                        <td><%= item.quantity %></td>
+                        <td><%= item.quantity * item.product.price %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <h2>Total: <%= total %></h2>
+        <form action="/orders/create" method="POST">
+            <button type="submit">Place Order</button>
+        </form>
+    <% } %>
+</body>
+</html>

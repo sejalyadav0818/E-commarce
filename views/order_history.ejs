@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order history</title>
+</head>
+
+<body>
+  <div>
+    <div>
+      <p>order id:</p>
+      <p>order date:</p>
+    </div>
+    <div>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% var finaltotal = 0%>
+            <% for(var i=0;i<carts.length;i++) {%>
+            <tr>
+              <td>
+                <div>
+                  <img src="/<%=carts[i].product.image_url%>" alt="..." />
+                  <div>
+                    <p><%=carts[i].product.product_name%></p>
+                    <span>Price: <%=carts[i].product.product_price%></span> <br />
+                    <button onclick="removeItem(`<%=carts[i].id%>`)">Remove</button>
+                    <!-- <a href="">remove</a> -->
+                  </div>
+                </div>
+              </td>
+              <td><input type="number" value="<%=carts[i].quantity%>" min="1" disabled /></td>
+              <td><%=carts[i].total%></td>
+              <% var finaltotal= finaltotal+ carts[i].total%>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+        <div>
+          <table>
+            <tr>
+              <td>Subtotal</td>
+              <td id="finaltotal"><%=finaltotal%></td>
+            </tr>
+          </table>
+          <button onclick="placeOrder()">Proceed To Checkout</button>
+          <!-- <a href="">Proceed To Checkout</a> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

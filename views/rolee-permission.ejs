@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin-Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable();
+        });
+    </script>
+
+<body>
+
+    <h1>Roles jh.lkj</h1>
+    <div>
+
+        <table id="myTable" class="display">
+            <tr>
+                <th scope="col" id="product_name" onclick="sorting(this.id)">Role Name</th>
+                <!-- <th scope="col" id="product_description" onclick="sorting(this.id)">Description</th>
+                <th scope="col" id="product_price" onclick="sorting(this.id)">Price</th> -->
+                <th scope="col">permissions</th>
+                <th scope="col">Edit</th>
+
+            </tr>
+
+            <tbody id="tbody">
+                <% for(var i=0;i<roles.length;i++) {%>
+
+                    <tr>
+                        <td>
+                            <a class="text-heading font-semibold" href="#">
+                                <%= roles[i].name %>
+                            </a>
+                        </td>
+
+                        <% for(var j=0;j<permissions.length;j++) {%>
+
+
+                            <td>
+                                <input type="checkbox" name="create" id="create" checked>
+                                <%=permissions[j].name%>
+                            </td>
+                            <%else%>
+                                <td>
+                                    <input type="checkbox" name="create" id="create">
+                                    <%=permissions[j].name%>
+                                </td>
+
+                                <% } %>
+
+
+                                    <!-- <td>
+                            <input type="checkbox" name="view" id="view">view
+                        </td>
+                        <td>
+                            <input type="checkbox" name="edit" id="edit">edit
+                        </td>
+                        <td>
+                            <input type="checkbox" name="delete" id="delete">delete
+                        </td> -->
+                                    <td>
+
+                                        <input type="submit" value="edit">
+                                    </td>
+                                    <!-- <td>
+                        <% for(j=0; j<permissions.length;j ++){ %>
+                           <% if(roles[i].permissions[i].name == permissions[j].name){%>
+                                <input type="checkbox" name="name" value="<%= permissions[j].name%>" checked><%= permissions[j].name%>
+
+                            <%}else{%>
+                                <input type="checkbox" name="name" value="<%= permissions[j].name%>"><%= permissions[j].name%>
+
+                            <%} %>  
+                        <% }%>
+
+                      </td> -->
+
+
+                    </tr>
+                    <% } %>
+            </tbody>
+
+        </table>
+    </div>
+</body>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>

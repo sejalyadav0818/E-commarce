@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'></link>  
+    <style>
+        body {
+            margin-top: 20px;
+        }
+
+        .img-responsive {
+            display: block;
+            height: auto;
+            max-width: 100%;
+            padding-bottom: 70px;
+        }
+
+        form {
+            width: 300px;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        .value-button {
+            display: inline-block;
+            border: 1px solid #ddd;
+            margin: 0px;
+            width: 40px;
+            height: 20px;
+            text-align: center;
+            vertical-align: middle;
+            padding: 11px 0;
+            background: #eee;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .value-button:hover {
+            cursor: pointer;
+        }
+
+        form #decrease {
+            margin-right: -4px;
+            border-radius: 8px 0 0 8px;
+        }
+
+        form #increase {
+            margin-left: -4px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        form #input-wrap {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        input#number {
+            text-align: center;
+            border: none;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            margin: 0px;
+            width: 40px;
+            height: 40px;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('nav_user') %>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-11">
+
+                    <div class="panel-body">
+                        <% var finaltotal=0%>
+                            <% for(var i=0;i<carts.length;i++) {%>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <img class="img-responsive" src="/<%=carts[i].product.product_image%>" id="zoom"
+                                            alt="" />
+
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <h4 class="product-name"><strong>
+                                                <%=carts[i].product.product_name%>
+                                            </strong></h4>
+                                        <h4><small>
+                                                <%=carts[i].product.product_description%>
+                                            </small></h4>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <div class="col-xs-6 text-right">
+                                            <h6><strong>
+                                                    <%=carts[i].product.product_price%><span class="text-muted">x</span>
+                                                </strong></h6>
+                                        </div>
+                                       
+                                        <div class="col-xs-4">
+                                            ₹ <%=carts[i].total%>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <button type="button" class="btn btn-link btn-xs"
+                                                onclick="removeItem(`<%=carts[i].id%>`)">
+
+                                                <span class="glyphicon glyphicon-trash"> </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <hr>
+
+                                    <hr>
+                                    <div class="row">
+                                        <div class="text-center">
+                                            <div class="col-xs-9">
+                                                <h6 class="text-right">Total</h6>
+                                            </div>
+                                            <div class="col-xs-3" id="finaltotal">
+
+                                                ₹ <%=finaltotal%>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row text-center">
+                            <div class="col-xs-9">
+                                <h4 class="text-right">Total <strong>$50.00</strong></h4>
+                            </div>
+                            <div class="col-xs-3">
+                                <button type="button" class="btn btn-success btn-block">
+                                    <button class="checkout btn" onclick="placeOrder()">Checkout</button>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+</body>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script>
+
+    async function removeItem(id) {
+        axios.delete(`/cart/${id}`).then(function (response) { return "data deleted" });
+        location.assign("/cart/cart_page")
+    }
+
+    async function placeOrder() {
+        const finalTotal = document.getElementById('finaltotal').innerText;
+        if (finalTotal > 0) {
+            confirm(" Order  placed!", "success")
+            const res = await axios.post('/orders');
+            // console.log("order", res);
+
+            const orderId = res.data.id;
+            //console.log(orderId);
+            const pByCart = await axios.get(`/cart/productbycart`)
+            // console.log('pByCart', pByCart);
+            const data = pByCart.data;
+            await axios.post(`/orderitems/${orderId}`, data)
+        } else {
+            confirm("Your cart is empty!")
+
+        }
+
+    }
+   
+</script>
+
+</html>

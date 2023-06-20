@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+< lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+  <%- include('nav_user') %>
+  <section class="section product-detail">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-4">
+          <div class="card">
+            <img src="/<%=product.product_image%>" id="zoom" alt="" />
+            <!-- <img class="card-img-top" src="<%= product.product_image %>" alt="Product Image"> -->
+           
+          </div>
+        </div>
+<div class="col-md-6">
+<div class="card-body">
+  <h5 class="card-title">
+    <h2 class="space">Product name : <%=product.product_name%>
+    </h2> 
+  </h5>
+  <h1 class="space">Category :<%=product.catrgory[0].category_name%>
+  </h1>
+  </p>
+  <p class="space">Price: $<%= product.product_price %>
+  </p>
+  <p class="card-text">
+    <!-- <p><%=product.product_description%></p>   -->
+  </p>
+
+  <form class="form">
+    Enter Quantity : <input type="text" placeholder="1" id="quantity" value="1" />
+       <a class="addCart" onclick="return addToCart(`<%=product.id%>`,`<%=product.product_price%>`)">Add To
+      Cart</a>
+  </form>
+
+</div>
+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <!-- Footer -->
+  <footer class="footer">
+    <center>
+      <div class="col d-flex">
+        <span><i class="bx bxl-facebook-square"></i></span>
+        <span><i class="bx bxl-instagram-alt"></i></span>
+        <span><i class="bx bxl-github"></i></span>
+        <span><i class="bx bxl-twitter"></i></span>
+        <span><i class="bx bxl-pinterest"></i></span>
+      </div>
+    </center>
+
+  </footer>
+  <!-- Custom Script -->
+
+  <script>
+    const addToCart = async (pid, price) => {
+     // console.log("hello add to cart");
+
+      // console.log(product.product_price);
+      // e.preventDefault();
+      //console.log(price);
+      const quantity = document.getElementById('quantity').value;
+      //console.log(quantity);
+      // const price = document.getElementById('price').value;
+      const subtotal = quantity * price;
+      //console.log(subtotal);
+
+      var toastMixin = Swal.mixin({
+        toast: true,
+        icon: 'success',
+        title: 'General Title',
+        animation: false,
+        position: 'top-right',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      });
+
+      toastMixin.fire({
+        animation: true,
+        title: 'Product Added !!!! '
+      });
+      //console.log('Product Added !!!!');
+      const res = await axios.post(`/cart/cart`, {
+        productId: pid,
+        quantity: +quantity,
+        total: +subtotal
+      })
+     // console.log("res", res);
+    }
+  </script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script src="/js/index.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha384-JUMjoW8OzDJw4oFpWIB2Bu/c6768ObEthBMVSiIx4ruBIEdyNSUQAjJNFqT5pnJ6"
+    crossorigin="anonymous"></script>
+  <script src="/js/zoomsl.min.js"></script>
+  <script>
+    $(function () {
+     // console.log("hello");
+      $("#zoom").imagezoomsl({
+        zoomrange: [4, 4],
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,109 @@
+<!-- users.ejs -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product</title>
+  <!-- Add Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+  
+<body>
+  <h1>Product Management System</h1>
+  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal">Add Category</button> 
+   <div class="container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Product Description</th>
+          <th>Price</th>
+          <th>Product Image</th>
+          <th>Categories</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i = 0; i < users.length; i++) { %>
+          <tr>
+            <td><%= users[i].product_name %></td>
+            <td><%= users[i].product_description %></td>
+            <td><%= users[i].product_price %></td>
+            <td><img src="<%= users[i].product_image %>" alt="Product Image" style="max-width: 100px;"></td>
+            <td>
+              <ul>
+                <% for (let j = 0; j < users[i].catrgory.length; j++) { %>
+                  <li><%= users[i].catrgory[j].category_name %></li>
+                <% } %>
+              </ul>
+            </td>
+            <td>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal<%= users[i].id %>">Edit</button>
+              <a href="/user/delete/<%= users[i].id %>" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>
+          <!-- Edit User Modal -->
+          <div class="modal fade" id="editModal<%= users[i].id %>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="/user/edit/<%= users[i].id %>" method="POST">
+                    <div class="form-group">
+                      <label for="edit-name">Name</label>
+                      <input type="text" class="form-control" id="edit-name" name="name" placeholder="Enter name" value="<%= users[i].name %>" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="edit-email">Email</label>
+                      <input type="email" class="form-control" id="edit-email" name="email" placeholder="Enter email" value="<%= users[i].email %>" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="edit-password">Password</label>
+                      <input type="password" class="form-control" id="edit-password" name="password" placeholder="Enter password" value="<%= users[i].password %>" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addModalLabel">Add Category</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/user/insert" method="POST">
+            <div class="form-group">
+              <label for="name">Category Name</label>
+              <input type="text" class="form-control" id="c_name" name="c_name" placeholder="Enter Category name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Add Bootstrap JS script -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
+  

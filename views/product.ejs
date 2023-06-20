@@ -1,0 +1,264 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Listing</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('#myTable').DataTable();
+    });
+
+    async function confirmation(id) {
+      if (confirm("Are you sure ..?")) {
+        //console.log(`${id}`);
+        const res = await axios.delete(`/Product/delete/${id}`).then(function (response) {
+          return "data deleted"
+        });
+
+        //   console.log("hello9");
+        window.location.reload();
+      } else {
+        alert("not deleted");
+      }
+    }
+    // Update the user information in the table
+    function updateUserRow(updatedUser) {
+      const row = document.getElementById(`userRow${updatedUser.id}`);
+      if (row) {
+        row.cells[1].textContent = updatedUser.product_name;
+        row.cells[2].textContent = updatedUser.product_description;
+        row.cells[3].textContent = updatedUser.product_price;
+
+      }
+    }
+
+    // Function to handle the form submission and update the user
+    async function editUser(id) {
+      const product_name = document.getElementById(`edit-name-${id}`).value;
+      const product_description = document.getElementById(`edit-product-description-${id}`).value;
+      const product_price = document.getElementById(`edit-product-price-${id}`).value;
+      const categoryId = document.getElementById('oprtion-value').value;
+      if (!product_name || !product_description || !product_price || !categoryId) {
+        alert("Please enter all fields");
+        return;
+      }
+
+
+      const res = await axios.patch(`/Product/edit/${id}`, {
+        product_name: product_name,
+        product_description: product_description,
+        product_price: product_price,
+        categoryId: categoryId,
+      });
+
+
+      Toastify({
+        text: 'User updated successfully',
+        duration: 4000,
+        gravity: 'top',
+        position: 'right',
+      }).showToast();
+
+
+      // Clear input fields
+      document.getElementById('product_name').value = '';
+      document.getElementById('product_description').value = '';
+      document.getElementById('product_price').value = '';
+
+      // Append the new user row to the table
+      const table = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+      const newRow = table.insertRow();
+      newRow.id = `userRow${res.data.id}`;
+      newRow.innerHTML = `
+
+        <td>
+        <select class="form-select" aria-label="Default select example" id="categoryId" name="categoryId">
+                       <% categories.forEach(function(category) { %>
+                      <option value="${res.data.categoryId}">
+                        <%= category.category_name %>
+                      </option>
+                     <% }); %>
+                  </select>
+<td>
+          <td>${res.data.product_name}</td>
+          <td>${res.data.product_description}</td>
+          <td>${res.data.product_price}</td>
+          <td>
+            <button class="btn btn-danger" onclick="confirmation(${res.data.id})">Delete</button>
+          </td>
+        `;
+
+      window.location.reload(); // Reload the page
+
+
+      Toastify({
+        text: 'Failed to add user',
+        duration: 4000,
+        gravity: 'top',
+        position: 'right',
+        backgroundColor: '#ff0000',
+      }).showToast();
+    }
+
+
+  </script>
+</head>
+
+<body>
+  <%- include("darshboard") -%>
+    <br>
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal">Add Product</button>
+    <br> <br>
+    <table id="myTable" class="display" style="width:90%">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Product Description</th>
+          <th>Product Price</th>
+
+          <th>Category</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <% for (let i=0; i < products.length; i++) { %>
+          <tr id="userRow<%= products[i].id %>">
+            <td>
+              <%= products[i].product_name %>
+            </td>
+            <td>
+              <%= products[i].product_description %>
+            </td>
+            <td>
+              <%= products[i].product_price %>
+            </td>
+            <td>
+              <% for (let j=0; j < products[i].catrgory.length; j++) { %>
+                <li>
+                  <%= products[i].catrgory[j].category_name %>
+                </li>
+                <% } %>
+
+            </td>
+            <td data-id="<%= products[i].id %>">
+              <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#editModal<%= products[i].id %>"
+                onclick="editUser('<%= products[i].id %>')">Edit</a>
+              <button class="btn btn-danger" onclick="confirmation(`<%= products[i].id%>`)">Delete</button>
+            </td>
+          </tr>
+          <% } %>
+      </tbody>
+
+    </table>
+
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProductModalLabel">Add Product</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <% categories.forEach(function(category) { %>
+              <form action="/Product/products" method="POST" enctype="multipart/form-data">
+                <% }); %>
+
+                  <label for="categoryId">Category:</label>
+                  <select class="form-select" aria-label="Default select example" id="categoryId" name="categoryId">
+
+                    <% categories.forEach(function(category) { %>
+                      <option value="<%= category.id %>">
+                        <%= category.category_name %>
+                      </option>
+                      <% }); %>
+                  </select>
+                  <input type="hidden" name="categoryId">
+                  <div class="form-group">
+                    <label for="edit-product-name">Product Name</label>
+                    <input type="text" class="form-control" id="edit-product-name" name="product_name"
+                      placeholder="Enter product name" value="" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-product-description"></label>
+                    <textarea class="form-control" id="edit-product-description" name="product_description"
+                      placeholder="Enter product description" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-product-price"></label>
+                    <input type="number" class="form-control" id="edit-product-price" name="product_price"
+                      placeholder="Enter price" value="" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-product-image">Product Image</label>
+                    <input type="file" name="product_image" />
+                  </div>
+                  <button type="submit" class="btn btn-primary">Add</button>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <% products.forEach(function(products) { %>
+      <!-- Edit Product Modal -->
+      <div class="modal fade" id="editModal<%= products.id %>" tabindex="-1" role="dialog"
+        aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <label for="categoryId">Category:</label>
+                <select class="form-select" aria-label="Default select example" id="categoryId" name="categoryId">
+                  <% categories.forEach(function(category) { %>
+                    <option id="oprtion-value" value="<%= category.id %>">
+                      <%= category.category_name %>
+                    </option>
+                    <% }); %>
+                </select>
+                <div class="form-group">
+                  <label for="edit-name">Product Name</label>
+                  <input type="text" class="form-control" id="edit-name-<%= products.id %>" name="product_name"
+                    value="<%= products.product_name %>" required>
+                </div>
+                <div class="form-group">
+                  <label for="edit-product-description">Product Description</label>
+                  <input type="text" class="form-control" id="edit-product-description-<%= products.id %>"
+                    name="product_description" value="<%= products.product_description %>" required>
+                </div>
+                <div class="form-group">
+                  <label for="edit-product-price">Product Price</label>
+                  <input type="text" class="form-control" id="edit-product-price-<%= products.id %>"
+                    name="product_price" value="<%= products.product_price %>" required>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="editUser('<%= products.id %>')">Update</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+</body>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
